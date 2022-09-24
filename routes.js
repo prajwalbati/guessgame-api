@@ -41,27 +41,44 @@ router.post('/start-game', async (req, res, next) => {
 
 router.post('/:id/submit-guess/:roundId', async(req, res, next) => {
     try {
-        let gameId = req.body.gameId;
-        let roundId = req.body.roundId;
+        let gameId = req.params.id;
+        let roundId = req.params.roundId;
         let players = await userModel.find();
+        let roundDetails = await gameRoundModel.findOne({_id: roundId});
+        let secretNumber = roundDetails.secret_number;
         for (let i = 0; i < players.length; i++) {
             const player = players[i];
+            let finalCredit = 100;
             if(player.username == "Player 1") {
+                let userCredit = await userCreditModel.find({round_id: roundId, user_id: player._id}).sort({ 'created_at': -1 });
+                if(userCredit && userCredit.length > 0) {
+                    finalCredit = userCredit[0].final_credit;
+                }
+                finalCredit -= 10;
                 let guessedNumber = req.body.guessedNumber;
+                finalCredit = guessedNumber < secretNumber ? finalCredit + (guessedNumber * 10) : finalCredit;
                 let userCreditData = {
                     game_id: gameId,
                     round_id: roundId,
                     guessed_number : guessedNumber,
-                    user_id: player._id
+                    user_id: player._id,
+                    final_credit: finalCredit
                 };
                 await new userCreditModel(userCreditData).save();
             } else {
+                let userCredit = await userCreditModel.find({round_id: roundId, user_id: player._id}).sort({ 'created_at': -1 });
+                if(userCredit && userCredit.length > 0) {
+                    finalCredit = userCredit[0].final_credit;
+                }
+                finalCredit -= 10;
                 let randomNumber = Number((Math.random() * 10).toFixed(2));
+                finalCredit = randomNumber < secretNumber ? finalCredit + (randomNumber * 10) : finalCredit;
                 let userCreditData = {
                     game_id: gameId,
                     round_id: roundId,
                     guessed_number : randomNumber,
-                    user_id: player._id
+                    user_id: player._id,
+                    final_credit: finalCredit
                 };
                 await new userCreditModel(userCreditData).save();
             }
