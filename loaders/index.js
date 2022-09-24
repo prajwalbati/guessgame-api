@@ -8,6 +8,7 @@ const cors = require('cors');
 
 const databaseLoader = require('./database');
 const api = require('../routes');
+const { seedUsers } = require('../seeder/userSeeder');
 
 let init = async (app) => {
     await databaseLoader.init();
@@ -27,10 +28,13 @@ let init = async (app) => {
     app.use(methodOverride('_method'));
     app.use(morgan('dev'));
 
+    seedUsers();
+
     app.use('/api', cors(), api);
 
     app.use(async(err, req, res, next) => {
         console.error(err);
+        return res.status(500).send({error: err});
     });
 };
 
