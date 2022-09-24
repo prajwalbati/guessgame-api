@@ -11,4 +11,7 @@ let gameRoundSchema = new Schema({
     'updated_at': { type: Date, default: Date.now }
 });
 
+gameRoundSchema.set('toObject', { virtuals: true });
+gameRoundSchema.set('toJSON', { virtuals: true });
+
 module.exports = mongoose.model('GameRound', gameRoundSchema);

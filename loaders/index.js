@@ -1,4 +1,6 @@
 const morgan = require('morgan');
+const path = require("path");
+const express = require('express');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const bodyParser = require('body-parser');
@@ -23,14 +25,15 @@ let init = async (app) => {
             mongoUrl: process.env.DATABASE_URL
         })
     }));
-
+    app.use(express.static(path.join(__dirname, '/')))
     app.use(cookieParser());
     app.use(methodOverride('_method'));
     app.use(morgan('dev'));
 
     seedUsers();
 
-    app.use('/api', cors(), api);
+    app.use(cors());
+    app.use('/api', api);
 
     app.use(async(err, req, res, next) => {
         console.error(err);

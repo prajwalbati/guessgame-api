@@ -41,6 +41,9 @@ router.post('/start-game', async (req, res, next) => {
 
 router.post('/:id/submit-guess/:roundId', async(req, res, next) => {
     try {
+        if(req.body.guessedNumber < 0 && req.body.guessedNumber > 9.99) {
+            return res.send({'message': 'Number must be between 0 to 9.99'});
+        }
         let gameId = req.params.id;
         let roundId = req.params.roundId;
         let players = await userModel.find();
@@ -50,7 +53,7 @@ router.post('/:id/submit-guess/:roundId', async(req, res, next) => {
             const player = players[i];
             let finalCredit = 100;
             if(player.username == "Player 1") {
-                let userCredit = await userCreditModel.find({round_id: roundId, user_id: player._id}).sort({ 'created_at': -1 });
+                let userCredit = await userCreditModel.find({game_id: gameId, user_id: player._id}).sort({ 'created_at': -1 });
                 if(userCredit && userCredit.length > 0) {
                     finalCredit = userCredit[0].final_credit;
                 }
@@ -62,11 +65,11 @@ router.post('/:id/submit-guess/:roundId', async(req, res, next) => {
                     round_id: roundId,
                     guessed_number : guessedNumber,
                     user_id: player._id,
-                    final_credit: finalCredit
+                    final_credit: Number(finalCredit.toFixed(2))
                 };
                 await new userCreditModel(userCreditData).save();
             } else {
-                let userCredit = await userCreditModel.find({round_id: roundId, user_id: player._id}).sort({ 'created_at': -1 });
+                let userCredit = await userCreditModel.find({game_id: gameId, user_id: player._id}).sort({ 'created_at': -1 });
                 if(userCredit && userCredit.length > 0) {
                     finalCredit = userCredit[0].final_credit;
                 }
@@ -78,7 +81,7 @@ router.post('/:id/submit-guess/:roundId', async(req, res, next) => {
                     round_id: roundId,
                     guessed_number : randomNumber,
                     user_id: player._id,
-                    final_credit: finalCredit
+                    final_credit: Number(finalCredit.toFixed(2))
                 };
                 await new userCreditModel(userCreditData).save();
             }
@@ -97,5 +100,4 @@ router.post('/:id/finish-game', async(req, res, next) => {
         return next(error);
     }
 });
-
 module.exports = router;

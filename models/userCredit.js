@@ -13,4 +13,7 @@ let userCreditSchema = new Schema({
     'updated_at': { type: Date, default: Date.now }
 });
 
+userCreditSchema.set('toObject', { virtuals: true });
+userCreditSchema.set('toJSON', { virtuals: true });
+
 module.exports = mongoose.model('UserCredit', userCreditSchema);
