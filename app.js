@@ -19,7 +19,7 @@ let startServer = async() => {
             console.log(err);
             return;
         }
-        console.log(`Express running at port: ${process.env.PORT} -> ${process.env.APP_URL}:${process.env.PORT}`);
+        console.log(`Express running at port: ${process.env.PORT} -> ${process.env.APP_URL}`);
     });
     var io = require('socket.io')(server, {
         cors: {
