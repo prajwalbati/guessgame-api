@@ -22,7 +22,11 @@ let init = async (app) => {
         saveUninitialized: true,
         resave: true,
         store: mongoConnect.create({
-            mongoUrl: process.env.DATABASE_URL
+            mongoUrl: process.env.DATABASE_URL,
+            // below fields are add to fix the expiry issue with cosmos db
+            ttl:24 * 60 * 60 * 1000,
+            autoRemove: 'interval',
+            autoRemoveInterval: 10 // Value in minutes (default is 10)
         })
     }));
     app.use(express.static(path.join(__dirname, '/')))
