@@ -45,7 +45,7 @@ let startServer = async() => {
                 };
                 for (let i = 0; i < players.length; i++) {
                     let player = players[i];
-                    let userCredit = await userCreditModel.findOne({user_id: player._id, round_id: gameRound._id}).sort({ 'created_at': 1 });
+                    let userCredit = await userCreditModel.findOne({user_id: player._id, round_id: gameRound._id});
                     if(userCredit) {
                         roundData[player.username] =  {
                             guessNumber: userCredit.guessed_number,

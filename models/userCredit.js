@@ -9,9 +9,11 @@ let userCreditSchema = new Schema({
     'user_id': {type: Schema.Types.ObjectId, ref: 'User'},
     'guessed_number': {type: Number},
     'final_credit': {type: Number},
-    'created_at': { type: Date, default: Date.now },
+    'created_at': { type: Date, default: Date.now, index: true },
     'updated_at': { type: Date, default: Date.now }
 });
+
+userCreditSchema.index({ created_at: 'date' });
 
 userCreditSchema.set('toObject', { virtuals: true });
 userCreditSchema.set('toJSON', { virtuals: true });
